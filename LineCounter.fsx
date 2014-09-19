@@ -24,6 +24,11 @@ let codeFilePaths =
             |> Seq.map (fun desc -> Path.Combine(Path.GetDirectoryName(path), desc.FirstAttribute.Value)))
         |> Seq.concat
 
-codeFilePaths
-|> Seq.iter (printfn "%s")
+let totalLoc = 
+    codeFilePaths
+    |> Seq.sumBy (fun path ->
+        File.ReadLines(path)
+        |> Seq.length)
+
+Console.WriteLine ("Total Loc: " + totalLoc.ToString())
 Console.ReadKey() |> ignore

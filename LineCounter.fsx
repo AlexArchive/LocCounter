@@ -11,17 +11,18 @@ let solutionDirPath = Path.GetDirectoryName(solutionPath)
 
 let solutionText = File.ReadAllText(solutionPath)
 let projectPaths  = 
-    Regex.Matches(solutionText, "Project.+?, \"(.+?\.csproj)")
+    Regex.Matches(solutionText, "([^\"]*csproj)")
     |> Seq.cast<Match>
     |> Seq.map (fun m -> Path.Combine(solutionDirPath, m.Groups.[1].Value))
 
 let codeFilePaths = 
     projectPaths
-    |> Seq.map (fun path -> 
-        let document = XDocument.Load(path)
+    |> Seq.map (fun projPath -> 
+        let projectDirPath = Path.GetDirectoryName(projPath)
+        let document = XDocument.Load(projPath)
         document.Descendants()
             |> Seq.where (fun desc -> desc.Name.LocalName = "Compile")
-            |> Seq.map (fun desc -> Path.Combine(Path.GetDirectoryName(path), desc.FirstAttribute.Value)))
+            |> Seq.map (fun desc -> Path.Combine(projectDirPath, desc.FirstAttribute.Value)))
         |> Seq.concat
 
 let totalLoc = 

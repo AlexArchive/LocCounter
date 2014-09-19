@@ -1,5 +1,8 @@
-﻿open System
+﻿#r "System.Xml.Linq"
+
+open System
 open System.IO
+open System.Xml.Linq
 open System.Text.RegularExpressions
 
 Console.Write "Enter solution path: "
@@ -12,6 +15,15 @@ let projectPaths  =
     |> Seq.cast<Match>
     |> Seq.map (fun m -> Path.Combine(solutionDirPath, m.Groups.[1].Value))
 
-projectPaths
+let codeFilePaths = 
+    projectPaths
+    |> Seq.map (fun path -> 
+        let document = XDocument.Load(path)
+        document.Descendants()
+            |> Seq.where (fun desc -> desc.Name.LocalName = "Compile")
+            |> Seq.map (fun desc -> Path.Combine(Path.GetDirectoryName(path), desc.FirstAttribute.Value)))
+        |> Seq.concat
+
+codeFilePaths
 |> Seq.iter (printfn "%s")
 Console.ReadKey() |> ignore

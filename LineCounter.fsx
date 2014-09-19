@@ -5,7 +5,7 @@ open System.IO
 open System.Xml.Linq
 open System.Text.RegularExpressions
 
-Console.Write "Enter solution path: "
+printf "Enter solution path: "
 let solutionPath = Console.ReadLine()
 let solutionDirPath = Path.GetDirectoryName(solutionPath)
 
@@ -30,5 +30,5 @@ let totalLoc =
         File.ReadLines(path)
         |> Seq.length)
 
-Console.WriteLine ("Total Loc: " + totalLoc.ToString())
+printfn "Total Loc: %i" totalLoc
 Console.ReadKey() |> ignore

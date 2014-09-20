@@ -25,10 +25,19 @@ let codeFilePaths =
             |> Seq.map (fun desc -> Path.Combine(projectDirPath, desc.FirstAttribute.Value)))
         |> Seq.concat
 
+let locIsSignificant (loc : string) =
+    let sanitizedLoc = loc.Trim()
+    match sanitizedLoc with
+    | ""  -> false
+    | "{" -> false
+    | "}" -> false
+    | _   -> true
+
 let totalLoc = 
     codeFilePaths
     |> Seq.sumBy (fun path ->
         File.ReadLines(path)
+        |> Seq.where locIsSignificant
         |> Seq.length)
 
 printfn "Total Loc: %i" totalLoc

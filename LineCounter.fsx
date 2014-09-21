@@ -11,9 +11,9 @@ let solutionDirPath = Path.GetDirectoryName(solutionPath)
 
 let solutionText = File.ReadAllText(solutionPath)
 let projectPaths  = 
-    Regex.Matches(solutionText, "([^\"]*csproj)")
+    Regex.Matches(solutionText, "[^\"]*csproj")
     |> Seq.cast<Match>
-    |> Seq.map (fun m -> Path.Combine(solutionDirPath, m.Groups.[1].Value))
+    |> Seq.map (fun m -> Path.Combine(solutionDirPath, m.Value))
 
 let codeFilePaths = 
     projectPaths
@@ -23,7 +23,7 @@ let codeFilePaths =
         document.Descendants()
             |> Seq.where (fun desc -> desc.Name.LocalName = "Compile")
             |> Seq.map (fun desc -> Path.Combine(projectDirPath, desc.FirstAttribute.Value)))
-        |> Seq.concat
+    |> Seq.concat
 
 let locIsSignificant (loc : string) =
     let sanitizedLoc = loc.Trim()
